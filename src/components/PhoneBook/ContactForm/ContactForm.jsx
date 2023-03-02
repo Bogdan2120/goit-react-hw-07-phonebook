@@ -1,19 +1,13 @@
 import { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import {  useDispatch } from 'react-redux';
 
-import Notiflix from 'notiflix';
-
-import { addContacts } from 'redux/contactsSlice';
-
-import { getAllContacts } from 'redux/selectors';
-
+import { fetchAddContacts } from 'redux/contacts/contacts-operations';
 import styles from './contactForm.module.scss';
 
 const ContactForm = () => {
   const [name, setName] = useState('');
-  const [number, setNumder] = useState('');
+  const [phone, setPhone] = useState('');
 
-  const contacts = useSelector(getAllContacts);
   const dispatch = useDispatch();
 
   const handleChange = ({ target }) => {
@@ -21,7 +15,7 @@ const ContactForm = () => {
       case 'name':
         return setName(target.value);
       case 'number':
-        return setNumder(target.value);
+        return setPhone(target.value);
       default:
         return;
     }
@@ -29,25 +23,13 @@ const ContactForm = () => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    if (isDublicate(name)) {
-      Notiflix.Notify.failure(`${name} is olready in contacts`);
-      return;
-    }
 
-    dispatch(addContacts({ name, number }));
+    dispatch(fetchAddContacts({ name, phone }));
     setName('');
-    setNumder('');
+    setPhone('');
   };
 
-  const isDublicate = name => {
-    const normalizedName = name.toLocaleLowerCase();
-
-    const result = contacts.find(({ name }) => {
-      return name.toLocaleLowerCase() === normalizedName;
-    });
-
-    return Boolean(result);
-  };
+  
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
@@ -74,7 +56,7 @@ const ContactForm = () => {
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
           required
           placeholder="444-44-44"
-          value={number}
+          value={phone}
           onChange={handleChange}
         />
       </label>
